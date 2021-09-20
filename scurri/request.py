@@ -144,6 +144,8 @@ class CarriersRequest(PaginatedRequest):
 class CarrierRequest(SingleRequest):
     """Request information about a carrier."""
 
+    method = "GET"
+
     @classmethod
     def uri(cls, *args: List[Any], **kwargs: Dict[str, Any]) -> str:
         """Return the request URI."""
