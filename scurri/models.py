@@ -58,6 +58,7 @@ class TrackedPackage:
         self.created_at: datetime = isoparse(kwargs[self.CREATED_AT])
         self.carrier: str = kwargs[self.CARRIER]
         self.carrier_url: str = kwargs[self.CARRIER_URL]
+        self.carrier_slug: str = self.carrier_url.split("/")[-1]
         self.events: List[TrackingEvent] = [
             TrackingEvent(event) for event in kwargs[self.EVENTS]
         ]

@@ -118,6 +118,10 @@ def test_tracked_package_sets_carrier_url(tracked_package, tracking_data):
     assert tracked_package.carrier_url == tracking_data["carrier_url"]
 
 
+def test_tracked_package_sets_carrier_slug(tracked_package, tracking_data):
+    assert tracked_package.carrier_slug == tracking_data["carrier_url"].split("/")[-1]
+
+
 def test_tracked_package_sets_events(tracked_package, tracking_data):
     assert type(tracked_package.events) == list
     assert len(tracked_package.events) == 2
