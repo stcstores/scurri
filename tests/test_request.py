@@ -50,6 +50,11 @@ def mock_response_data():
 
 
 @pytest.fixture
+def not_found_response():
+    return {"detail": "Not found."}
+
+
+@pytest.fixture
 def mock_single_request_subclass(mock_uri, mock_headers, mock_data):
     class MockSingleRequestSubclass(SingleRequest):
         method = POST
@@ -193,6 +198,17 @@ def paginated_request_subclass_mocked_for_request_method(
     return mock_paginated_request_subclass
 
 
+@pytest.fixture
+def paginated_request_subclass_mocked_for_request_method_with_error_response(
+    mock_paginated_request_subclass, not_found_response
+):
+    mock_paginated_request_subclass._make_request = MagicMock(
+        return_value=not_found_response
+    )
+    mock_paginated_request_subclass.parse_response = MagicMock()
+    return mock_paginated_request_subclass
+
+
 def test_request_method_calls_make_request(
     single_request_subclass_mocked_for_request_method,
     authenticated_scurri_api,
@@ -254,6 +270,18 @@ def test_paginated_request_request_method_with_params(
     paginated_request_subclass_mocked_for_request_method.uri.assert_called_once_with(
         **params
     )
+
+
+def test_paginated_request_with_error_response(
+    authenticated_scurri_api,
+    paginated_request_subclass_mocked_for_request_method_with_error_response,
+    mock_data,
+):
+    params = {"key": "value"}
+    with pytest.raises(exceptions.InvalidResponse):
+        paginated_request_subclass_mocked_for_request_method_with_error_response.request(
+            api_session=authenticated_scurri_api, data=mock_data, params=params
+        )
 
 
 @pytest.fixture
@@ -324,6 +352,21 @@ def test_paginated_request_response_returns_paginated_response(
         carriers_response_data[0]["results"] + carriers_response_data[1]["results"]
     )
     assert response == expected_response
+
+
+def test_paginated_request_terminates(
+    authenticated_scurri_api,
+    mock_paginated_request_subclass,
+    mock_carriers_request_response_page_1,
+):
+    mock_request = MagicMock()
+    mock_request.return_value = mock_carriers_request_response_page_1
+    authenticated_scurri_api.session.request = mock_request
+    request = mock_paginated_request_subclass()
+    with pytest.raises(exceptions.TooManyRequestsError):
+        mock_request, request.request(
+            api_session=authenticated_scurri_api,
+        )
 
 
 def test_carriers_request_uri_method():

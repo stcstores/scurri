@@ -2,6 +2,7 @@
 
 from typing import List
 
+from . import exceptions
 from .apisession import ScurriAPISession
 from .models import Carrier, TrackedPackage
 from .request import (
@@ -12,6 +13,8 @@ from .request import (
     TrackingByTrackingNumber,
     TrackingsRequest,
 )
+
+NOT_FOUND_RESPONSE = {"detail": "Not found."}
 
 
 class ScurriAPI:
@@ -56,10 +59,15 @@ class ScurriAPI:
 
         Returns:
             scurri.models.CarrierRequest
+
+        Raises:
+            scurri.exceptions.CarrierNotFound: If carrier_slug does not exist.
         """
         response = CarrierRequest.request(
             api_session=self.session, params={"carrier_slug": carrier_slug}
         )
+        if response == NOT_FOUND_RESPONSE:
+            raise exceptions.CarrierNotFound(carrier_slug)
         return Carrier(response)
 
     def get_carrier_trackings(self, carrier_slug: str) -> List[TrackedPackage]:
@@ -72,6 +80,10 @@ class ScurriAPI:
 
         Returns:
             list(scurri.models.TrackedPackage)
+
+        Raises:
+            scurri.exceptions.InvalidResponse: If the response is not valid or
+                carrier_slug does not exist.
         """
         results = CarrierTrackingsRequest.request(
             params={"carrier_slug": carrier_slug}, api_session=self.session
@@ -95,10 +107,17 @@ class ScurriAPI:
 
         Returns:
             scurri.models.TrackedPackage
+
+        Raises:
+            scurri.exceptions.PackageNotFound: If request does not return a package.
         """
         response = TrackingByPackageID.request(
             api_session=self.session, params={"package_id": package_id}
         )
+        if response == NOT_FOUND_RESPONSE:
+            raise exceptions.PackageNotFound(
+                f'No package found with ID "{package_id}".'
+            )
         return TrackedPackage(response)
 
     def get_tracking_by_tracking_number(
@@ -115,9 +134,17 @@ class ScurriAPI:
 
         Returns:
             scurri.models.TrackedPackage
+
+        Raises:
+            scurri.exceptions.PackageNotFound: If request does not return a package.
         """
         response = TrackingByTrackingNumber.request(
             api_session=self.session,
             params={"carrier_slug": carrier_slug, "tracking_number": tracking_number},
         )
+        if response == NOT_FOUND_RESPONSE:
+            raise exceptions.PackageNotFound(
+                f'No package found with carrier "{carrier_slug}" and '
+                f'tracking number "{tracking_number}".'
+            )
         return TrackedPackage(response)

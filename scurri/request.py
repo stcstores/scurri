@@ -91,6 +91,8 @@ class SingleRequest(BaseRequest):
 class PaginatedRequest(BaseRequest):
     """Base class for paginated Scurri API requests."""
 
+    MAX_PAGE_REQUESTS = 1500
+
     @classmethod
     def request(
         cls,
@@ -103,20 +105,25 @@ class PaginatedRequest(BaseRequest):
             params = {}
         responses = []
         uri = api_session.base_url + cls.uri(**params)
-        while True:
-            response = PaginatedResponse(
-                cls._make_request(
-                    api_session=api_session,
-                    method=cls.method,
-                    uri=uri,
-                    headers=cls.headers(),
-                    data=data,
-                )
+        for _ in range(cls.MAX_PAGE_REQUESTS):
+            response = cls._make_request(
+                api_session=api_session,
+                method=cls.method,
+                uri=uri,
+                headers=cls.headers(),
+                data=data,
             )
-            responses.append(response)
-            if response.next is None:
-                break
-            uri = response.next
+            try:
+                response_data = PaginatedResponse(response)
+            except KeyError:
+                raise exceptions.InvalidResponse(uri=uri, response=str(response))
+            else:
+                responses.append(response_data)
+                if response_data.next is None:
+                    break
+            uri = response_data.next
+        else:
+            raise exceptions.TooManyRequestsError()
         return cls.parse_responses(responses)
 
     @classmethod
