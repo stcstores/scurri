@@ -40,7 +40,6 @@ class ScurriAPISession:
     def _get_token(self, username: str, password: str) -> None:
         """Request an authorisation token."""
         url = f"{self.base_url}{self.AUTH_URI}"
-        print(url)
         request_json = {"username": username, "password": password}
         response = self.session.post(url, json=request_json)
         try:
