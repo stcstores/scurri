@@ -26,6 +26,7 @@ class BaseRequest:
     """Base class for Scurri API requests."""
 
     method: str
+    MAX_ATTEMPTS = 5
 
     @classmethod
     def uri(cls, *args: List[Any], **kwargs: Dict[str, Any]) -> str:
@@ -45,6 +46,7 @@ class BaseRequest:
         uri: str,
         headers: Dict[str, str],
         data: Optional[Dict[str, str]],
+        attempt: int = 1,
     ) -> Dict[str, Any]:
         auth_headers = api_session.get_headers()
         request_headers = auth_headers | headers
@@ -54,6 +56,17 @@ class BaseRequest:
             headers=request_headers,
             json=data,
         )
+        if response.text == """{"detail": "Internal server error"}""":
+            if attempt >= cls.MAX_ATTEMPTS:
+                raise exceptions.TooManyRequestAtemptsError(uri)
+            return cls._make_request(
+                api_session=api_session,
+                method=method,
+                uri=uri,
+                headers=headers,
+                data=data,
+                attempt=attempt + 1,
+            )
         try:
             return dict(response.json())
         except Exception as e:

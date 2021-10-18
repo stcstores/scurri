@@ -51,3 +51,11 @@ class TooManyRequestsError(Exception):
     def __init__(self) -> None:
         """Exception raised when a paginated request has requested many pages."""
         super().__init__("Too many pages requested.")
+
+
+class TooManyRequestAtemptsError(Exception):
+    """Exception raised when an API request fails too many times."""
+
+    def __init__(self, uri: str) -> None:
+        """Exception raised when an API request fails too many times."""
+        super().__init__(f'Too many failed requests to "{uri}".')

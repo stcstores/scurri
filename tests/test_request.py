@@ -55,6 +55,11 @@ def not_found_response():
 
 
 @pytest.fixture
+def server_error_response():
+    return {"detail": "Internal server error"}
+
+
+@pytest.fixture
 def mock_single_request_subclass(mock_uri, mock_headers, mock_data):
     class MockSingleRequestSubclass(SingleRequest):
         method = POST
@@ -199,7 +204,7 @@ def paginated_request_subclass_mocked_for_request_method(
 
 
 @pytest.fixture
-def paginated_request_subclass_mocked_for_request_method_with_error_response(
+def paginated_request_subclass_mocked_for_request_method_with_not_found_response(
     mock_paginated_request_subclass, not_found_response
 ):
     mock_paginated_request_subclass._make_request = MagicMock(
@@ -272,16 +277,68 @@ def test_paginated_request_request_method_with_params(
     )
 
 
-def test_paginated_request_with_error_response(
+def test_paginated_request_with_not_found_response(
     authenticated_scurri_api,
-    paginated_request_subclass_mocked_for_request_method_with_error_response,
+    paginated_request_subclass_mocked_for_request_method_with_not_found_response,
     mock_data,
 ):
     params = {"key": "value"}
     with pytest.raises(exceptions.InvalidResponse):
-        paginated_request_subclass_mocked_for_request_method_with_error_response.request(
+        paginated_request_subclass_mocked_for_request_method_with_not_found_response.request(
             api_session=authenticated_scurri_api, data=mock_data, params=params
         )
+
+
+def test_server_error_raises_too_many_request_attempts(
+    requests_mock, authenticated_scurri_api, server_error_response
+):
+    uri = "http://test_url.com"
+    requests_mock.get(uri, json=server_error_response)
+    with pytest.raises(exceptions.TooManyRequestAtemptsError):
+        BaseRequest._make_request(
+            api_session=authenticated_scurri_api,
+            method="GET",
+            uri=uri,
+            headers={},
+            data={},
+        )
+
+
+def test_request_is_reattempted_on_server_error(
+    requests_mock, authenticated_scurri_api, server_error_response
+):
+
+    uri = "http://test_url.com"
+    requests_mock.get(uri, json=server_error_response)
+    with pytest.raises(exceptions.TooManyRequestAtemptsError):
+        BaseRequest._make_request(
+            api_session=authenticated_scurri_api,
+            method="GET",
+            uri=uri,
+            headers={},
+            data={},
+        )
+    assert len(requests_mock.request_history) == BaseRequest.MAX_ATTEMPTS
+
+
+def test_request_recovers_after_sever_error_response(
+    requests_mock, authenticated_scurri_api, server_error_response
+):
+
+    uri = "http://test_url.com"
+    correct_response = {"data": "ok"}
+    requests_mock.get(
+        uri, [{"json": server_error_response}, {"json": correct_response}]
+    )
+    response = BaseRequest._make_request(
+        api_session=authenticated_scurri_api,
+        method="GET",
+        uri=uri,
+        headers={},
+        data={},
+    )
+    assert len(requests_mock.request_history) == 2
+    assert response == correct_response
 
 
 @pytest.fixture
