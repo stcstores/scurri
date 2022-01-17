@@ -414,7 +414,7 @@ python-versions = ">=3.6"
 
 [[package]]
 name = "types-python-dateutil"
-version = "2.8.6"
+version = "2.8.7"
 description = "Typing stubs for python-dateutil"
 category = "main"
 optional = false
@@ -463,7 +463,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "852d374238106f4026bea5e0d33fc2a37f3716b13f475e9d21954fbd71f2bd0f"
+content-hash = "225034464aca958935c4e68fd636225c6addf97501c687e3835f9b57f92c5965"
 
 [metadata.files]
 atomicwrites = [
@@ -678,8 +678,8 @@ tomli = [
     {file = "tomli-1.2.1.tar.gz", hash = "sha256:a5b75cb6f3968abb47af1b40c1819dc519ea82bcc065776a866e8d74c5ca9442"},
 ]
 types-python-dateutil = [
-    {file = "types-python-dateutil-2.8.6.tar.gz", hash = "sha256:83bc1424f7675c23f6d9a7673cc04e5acdb4aca885962c4d6d631bd114aa4c5f"},
-    {file = "types_python_dateutil-2.8.6-py3-none-any.whl", hash = "sha256:716ead66982fe3c601de3bcc934ee1ad3be27d7f975e1e2116594568a8c39c6c"},
+    {file = "types-python-dateutil-2.8.7.tar.gz", hash = "sha256:f34bae3c8e83c67f7cbf407fc9d6ee889d7708b42270a496b6026a5537e80482"},
+    {file = "types_python_dateutil-2.8.7-py3-none-any.whl", hash = "sha256:0e3b96fc79d3e58e011a9446ec85be080e2d2a8840dfe124ce30f4e53dbca9e5"},
 ]
 types-requests = [
     {file = "types-requests-2.27.6.tar.gz", hash = "sha256:5e0dc681e9bfadb5c1d17f63d29f6d13d29ef2897d30cb9c79285b34a1655fd7"},
