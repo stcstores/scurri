@@ -418,7 +418,7 @@ python-versions = "*"
 
 [[package]]
 name = "types-requests"
-version = "2.27.11"
+version = "2.27.12"
 description = "Typing stubs for requests"
 category = "dev"
 optional = false
@@ -459,7 +459,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "356037d018b0add4cead6ae63395fe6c3155f8ce8ca641bfbbc5c97c75814fc1"
+content-hash = "0126acd368a14bfa4da66795322ab4bd7a889cca8989af8b43bc5cc1cf356829"
 
 [metadata.files]
 atomicwrites = [
@@ -699,8 +699,8 @@ types-python-dateutil = [
     {file = "types_python_dateutil-2.8.9-py3-none-any.whl", hash = "sha256:d60db7f5d40ce85ce54e7fb14e4157daf33e24f5a4bfb5f44ee7a5b790dfabd0"},
 ]
 types-requests = [
-    {file = "types-requests-2.27.11.tar.gz", hash = "sha256:6a7ed24b21780af4a5b5e24c310b2cd885fb612df5fd95584d03d87e5f2a195a"},
-    {file = "types_requests-2.27.11-py3-none-any.whl", hash = "sha256:506279bad570c7b4b19ac1f22e50146538befbe0c133b2cea66a9b04a533a859"},
+    {file = "types-requests-2.27.12.tar.gz", hash = "sha256:fd1382fa2e28eac848faedb0332840204f06f0cb517008e3c7b8282ca53e56d2"},
+    {file = "types_requests-2.27.12-py3-none-any.whl", hash = "sha256:120c949953b618e334bbe78de38e65aa261e1f48df021a05f0be833a848e4ba7"},
 ]
 types-urllib3 = [
     {file = "types-urllib3-1.26.4.tar.gz", hash = "sha256:35c17be09e1bcef3b1e2101c5172b97cdb78330915973c741f4c1979d8405ef9"},
